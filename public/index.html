@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Log in · Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <main class="auth-page">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-mark"><span></span></div>
+        <div class="brand-name">Pulse</div>
+      </div>
+
+      <h1>Welcome back</h1>
+      <p class="auth-sub">Log in to keep the conversation going.</p>
+
+      <div id="formError" class="form-error"></div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="identifier">Email or username</label>
+          <input id="identifier" name="identifier" type="text" placeholder="you@example.com" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+        </div>
+        <button id="submitBtn" class="btn-primary" type="submit">Log in</button>
+      </form>
+
+      <p class="auth-switch">Don't have an account? <a href="/register.html">Create one</a></p>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>

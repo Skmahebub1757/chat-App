@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign up · Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <main class="auth-page">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-mark"><span></span></div>
+        <div class="brand-name">Pulse</div>
+      </div>
+
+      <h1>Create your account</h1>
+      <p class="auth-sub">Join Pulse and start chatting in real time.</p>
+
+      <div id="formError" class="form-error"></div>
+
+      <form id="registerForm" novalidate>
+        <div class="avatar-picker">
+          <div class="avatar-preview" id="avatarPreview">Photo</div>
+          <div>
+            <label for="avatarInput" class="btn-file">Upload picture</label>
+            <input id="avatarInput" name="avatar" type="file" accept="image/png,image/jpeg,image/gif,image/webp" class="visually-hidden" />
+            <p style="font-size:11.5px;color:var(--text-faint);margin-top:6px;">Optional · JPG, PNG, GIF or WEBP, up to 5MB</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="fullName">Full name</label>
+          <input id="fullName" name="fullName" type="text" placeholder="Jane Doe" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text" placeholder="janedoe" autocomplete="username" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="At least 6 characters" autocomplete="new-password" required />
+        </div>
+
+        <button id="submitBtn" class="btn-primary" type="submit">Create account</button>
+      </form>
+
+      <p class="auth-switch">Already have an account? <a href="/index.html">Log in</a></p>
+    </div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/register.js"></script>
+</body>
+</html>

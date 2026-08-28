@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pulse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Icon rail -->
+    <aside class="app-rail">
+      <div class="rail-brand"><span></span></div>
+      <nav class="rail-nav">
+        <button class="rail-btn active" title="Chats" aria-label="Chats">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+      </nav>
+      <div class="rail-bottom">
+        <button class="rail-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+          <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <a class="rail-btn" href="/profile.html" title="Account" aria-label="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <!-- Sidebar: conversation list -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="me-card">
+            <div class="avatar sm" id="meAvatar"></div>
+            <div>
+              <div class="name" id="meName">—</div>
+              <div class="handle" id="meHandle">—</div>
+            </div>
+          </div>
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="searchInput" type="text" placeholder="Search people" autocomplete="off" />
+          </div>
+        </div>
+        <div class="user-list" id="userList">
+          <!-- skeleton / users injected here -->
+        </div>
+      </aside>
+
+      <!-- Chat panel -->
+      <section class="chat-panel hide-mobile" id="chatPanel">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </div>
+          <h3>Your messages</h3>
+          <p>Select someone from the list to start chatting, or search for a person you know.</p>
+        </div>
+
+        <div id="conversationView" style="display:none; height:100%; flex-direction:column;">
+          <div class="chat-header">
+            <button class="icon-btn back-btn-mobile" id="backBtn" aria-label="Back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div class="avatar" id="chatAvatar"></div>
+            <div class="chat-header-info">
+              <div class="chat-header-name" id="chatName">—</div>
+              <div class="chat-header-status" id="chatStatus">Offline</div>
+            </div>
+          </div>
+
+          <div class="messages-scroll" id="messagesScroll"></div>
+          <div class="typing-indicator-label" id="typingLabel"></div>
+
+          <form class="composer" id="composerForm">
+            <textarea id="messageInput" rows="1" placeholder="Type a message…" autocomplete="off"></textarea>
+            <button class="send-btn" id="sendBtn" type="submit" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            </button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toastStack"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/theme.js"></script>
+  <script src="/js/chat.js"></script>
+</body>
+</html>
