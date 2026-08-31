@@ -32,16 +32,16 @@ function initSocket(io) {
     }
   });
 
-  io.on("connection", (socket) => {
+  io.on("connection", async (socket) => {
     const userId = socket.userId;
     socket.join(`user:${userId}`);
 
-    const justCameOnline = presence.addConnection(userId, socket.id);
+    const justCameOnline = await presence.addConnection(userId);
     if (justCameOnline) {
       socket.broadcast.emit("presence:online", { userId });
     }
     // Tell the newly-connected client who else is online right now
-    socket.emit("presence:list", { userIds: presence.onlineUserIds() });
+    socket.emit("presence:list", { userIds: await presence.onlineUserIds() });
 
     // --- Send a message ---
     socket.on("message:send", async (payload, ack) => {
@@ -61,7 +61,7 @@ function initSocket(io) {
           return ack?.({ ok: false, error: "That user no longer exists." });
         }
 
-        const delivered = presence.isOnline(receiverId) ? 1 : 0;
+        const delivered = (await presence.isOnline(receiverId)) ? 1 : 0;
         const [result] = await pool.query(
           `INSERT INTO messages (sender_id, receiver_id, text, delivered) VALUES (?, ?, ?, ?)`,
           [userId, receiverId, text, delivered]
@@ -104,8 +104,8 @@ function initSocket(io) {
     });
 
     // --- Disconnect ---
-    socket.on("disconnect", () => {
-      const justWentOffline = presence.removeConnection(userId, socket.id);
+    socket.on("disconnect", async () => {
+      const justWentOffline = await presence.removeConnection(userId);
       if (justWentOffline) {
         socket.broadcast.emit("presence:offline", { userId });
       }

@@ -171,7 +171,34 @@ chat-app/
   shared between them).
 - For production deployment, set `NODE_ENV=production` (this makes auth cookies `secure`, so
   you'll also need HTTPS) and put the app behind a process manager such as PM2.
-- If you run multiple instances of this app behind a load balancer, note that online/typing
-  presence is currently tracked in-memory per instance (`src/presence.js`). For multi-instance
-  deployments, back that with Redis (or Socket.IO's Redis adapter) so presence and message
-  delivery stay consistent across instances.
+
+## Running multiple instances behind a load balancer
+
+Socket.IO needs a bit of extra setup once you run more than one instance/process (multiple EC2/ECS
+tasks behind an ALB, PM2 cluster mode, etc.) — otherwise you'll see `400 Bad Request` /
+`"Session ID unknown"` errors, and messages will silently fail to reach users whose socket landed
+on a different instance than yours.
+
+1. **Enable sticky sessions on the load balancer.** On an AWS ALB, open the target group →
+   **Attributes** → enable **Stickiness** (duration-based, e.g. 1 day). This keeps each browser's
+   requests pinned to the same instance, which fixes the "Session ID unknown" polling error.
+   Stickiness alone is *not* enough for correct chat delivery, though — see the next step.
+
+2. **Set `REDIS_URL`.** This app uses the official Socket.IO Redis adapter so that instances can
+   relay events to each other, and stores online/offline presence in Redis instead of per-process
+   memory. Without it, User A on instance 1 and User B on instance 2 simply won't be able to message
+   each other, even though each instance looks like it's working fine in isolation. Spin up an
+   Amazon ElastiCache for Redis cluster (or any Redis instance reachable from your app), then set:
+
+   ```
+   REDIS_URL=redis://your-cluster-endpoint:6379
+   REDIS_TLS=true   # if your Redis requires TLS (e.g. ElastiCache in-transit encryption)
+   ```
+
+   On startup, the server logs `Socket.IO Redis adapter attached — safe to run multiple instances.`
+   If `REDIS_URL` isn't set, it falls back to a single-instance in-memory adapter and logs a
+   warning — fine for local dev or a single-instance deployment, but not safe behind a
+   multi-instance load balancer.
+
+3. **Make sure the load balancer allows WebSocket upgrades** (ALBs do this natively) and has a
+   sufficiently long idle timeout for long-lived connections.

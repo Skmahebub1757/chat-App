@@ -58,7 +58,7 @@ router.get("/", async (req, res) => {
 
         return {
           ...publicUser(u),
-          online: presence.isOnline(u.id),
+          online: await presence.isOnline(u.id),
           lastMessage: lastMsg
             ? { text: lastMsg.text, fromMe: lastMsg.sender_id === meId, createdAt: lastMsg.created_at }
             : null,

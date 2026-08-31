@@ -24,6 +24,38 @@ const io = new Server(server, {
   cors: { origin: true, credentials: true },
 });
 
+// When running more than one instance/process (e.g. behind a load balancer), attach the Redis
+// adapter so io.to()/broadcast reach sockets connected to *other* instances too. Without this,
+// two users chatting who happen to land on different instances will never see each other's
+// messages, even though each instance works fine on its own.
+async function attachRedisAdapter() {
+  if (!process.env.REDIS_URL) {
+    console.warn(
+      "REDIS_URL not set — running with a single-instance in-memory Socket.IO adapter. " +
+        "If you deploy more than one instance/process behind a load balancer, set REDIS_URL " +
+        "(e.g. an ElastiCache endpoint) or cross-instance messaging and presence will break."
+    );
+    return;
+  }
+  const Redis = require("ioredis");
+  const { createAdapter } = require("@socket.io/redis-adapter");
+
+  const tlsOpt = process.env.REDIS_TLS === "true" ? {} : undefined;
+  const pubClient = new Redis(process.env.REDIS_URL, { tls: tlsOpt });
+  const subClient = pubClient.duplicate();
+
+  pubClient.on("error", (err) => console.error("Redis (adapter pub) error:", err.message));
+  subClient.on("error", (err) => console.error("Redis (adapter sub) error:", err.message));
+
+  await Promise.all([
+    new Promise((resolve, reject) => pubClient.once("ready", resolve).once("error", reject)),
+    new Promise((resolve, reject) => subClient.once("ready", resolve).once("error", reject)),
+  ]);
+
+  io.adapter(createAdapter(pubClient, subClient));
+  console.log("Socket.IO Redis adapter attached — safe to run multiple instances.");
+}
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
@@ -56,6 +88,14 @@ async function start() {
     await initDb(); // connects to RDS and creates tables if they don't exist yet
   } catch (err) {
     console.error("Could not connect to the database. Check your DB_* settings in .env.");
+    console.error(err.message);
+    process.exit(1);
+  }
+
+  try {
+    await attachRedisAdapter();
+  } catch (err) {
+    console.error("Could not connect to Redis. Check your REDIS_* settings in .env.");
     console.error(err.message);
     process.exit(1);
   }
